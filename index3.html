@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Private Cloud Gallery</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#0f172a;
+color:white;
+min-height:100vh;
+}
+
+.login-page{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.login-box{
+background:#1e293b;
+padding:40px;
+border-radius:20px;
+width:350px;
+text-align:center;
+}
+
+.login-box h1{
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+}
+
+button{
+margin-top:15px;
+padding:12px;
+width:100%;
+border:none;
+border-radius:10px;
+background:#3b82f6;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#2563eb;
+}
+
+.dashboard{
+display:none;
+}
+
+.navbar{
+background:#1e293b;
+padding:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-size:22px;
+font-weight:bold;
+}
+
+.content{
+padding:20px;
+}
+
+.upload-area{
+background:#1e293b;
+padding:25px;
+border-radius:15px;
+margin-bottom:25px;
+}
+
+.gallery{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+gap:20px;
+}
+
+.card{
+background:#1e293b;
+padding:10px;
+border-radius:15px;
+}
+
+.card img,
+.card video{
+width:100%;
+border-radius:10px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="login-page" id="loginPage">
+
+<div class="login-box">
+
+<h1>🔒 Private Vault</h1>
+
+<input
+type="password"
+id="pin"
+placeholder="Enter PIN">
+
+<button onclick="login()">
+Unlock Gallery
+</button>
+
+</div>
+
+</div>
+
+<div class="dashboard" id="dashboard">
+
+<div class="navbar">
+<div class="logo">📸 My Cloud Gallery</div>
+<div>Protected Access</div>
+</div>
+
+<div class="content">
+
+<div class="upload-area">
+<h2>Upload Photos & Videos</h2>
+
+<br>
+
+<input
+type="file"
+id="uploadInput"
+accept="image/*,video/*"
+multiple>
+
+</div>
+
+<div class="gallery" id="gallery">
+
+<div class="card">
+https://picsum.photos/500/300
+</div>
+
+<div class="card">
