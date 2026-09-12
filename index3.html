@@ -1,163 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Private Cloud Gallery</title>
+    <title>My Private Gallery</title>
+    <style>
+        body{
+            font-family:Arial,sans-serif;
+            text-align:center;
+            background:#111;
+            color:white;
+            padding:20px;
+        }
 
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
-
-body{
-background:#0f172a;
-color:white;
-min-height:100vh;
-}
-
-.login-page{
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
-
-.login-box{
-background:#1e293b;
-padding:40px;
-border-radius:20px;
-width:350px;
-text-align:center;
-}
-
-.login-box h1{
-margin-bottom:20px;
-}
-
-input{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-}
-
-button{
-margin-top:15px;
-padding:12px;
-width:100%;
-border:none;
-border-radius:10px;
-background:#3b82f6;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
-
-button:hover{
-background:#2563eb;
-}
-
-.dashboard{
-display:none;
-}
-
-.navbar{
-background:#1e293b;
-padding:20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.logo{
-font-size:22px;
-font-weight:bold;
-}
-
-.content{
-padding:20px;
-}
-
-.upload-area{
-background:#1e293b;
-padding:25px;
-border-radius:15px;
-margin-bottom:25px;
-}
-
-.gallery{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-gap:20px;
-}
-
-.card{
-background:#1e293b;
-padding:10px;
-border-radius:15px;
-}
-
-.card img,
-.card video{
-width:100%;
-border-radius:10px;
-}
-
-</style>
+        img{
+            width:300px;
+            margin:10px;
+            border-radius:10px;
+        }
+    </style>
 </head>
 <body>
 
-<div class="login-page" id="loginPage">
+<h1>🔒 My Private Gallery</h1>
 
-<div class="login-box">
+<input type="file" id="upload" accept="image/*" multiple>
 
-<h1>🔒 Private Vault</h1>
+<div id="gallery"></div>
 
-<input
-type="password"
-id="pin"
-placeholder="Enter PIN">
+<script>
+document.getElementById("upload")
+.addEventListener("change", function(e){
 
-<button onclick="login()">
-Unlock Gallery
-</button>
+    const gallery =
+    document.getElementById("gallery");
 
-</div>
+    for(const file of e.target.files){
 
-</div>
+        const reader = new FileReader();
 
-<div class="dashboard" id="dashboard">
+        reader.onload = function(event){
 
-<div class="navbar">
-<div class="logo">📸 My Cloud Gallery</div>
-<div>Protected Access</div>
-</div>
+            const img =
+            document.createElement("img");
 
-<div class="content">
+            img.src = event.target.result;
 
-<div class="upload-area">
-<h2>Upload Photos & Videos</h2>
+            gallery.appendChild(img);
+        };
 
-<br>
+        reader.readAsDataURL(file);
+    }
+});
+</script>
 
-<input
-type="file"
-id="uploadInput"
-accept="image/*,video/*"
-multiple>
-
-</div>
-
-<div class="gallery" id="gallery">
-
-<div class="card">
-https://picsum.photos/500/300
-</div>
+</body>
+</html>
 
 <div class="card">
