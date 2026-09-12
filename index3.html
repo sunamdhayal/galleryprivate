@@ -1,58 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Private Gallery</title>
-    <style>
-        body{
-            font-family:Arial,sans-serif;
-            text-align:center;
-            background:#111;
-            color:white;
-            padding:20px;
-        }
-
-        img{
-            width:300px;
-            margin:10px;
-            border-radius:10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Gallery Test</title>
 </head>
 <body>
 
-<h1>🔒 My Private Gallery</h1>
+<h1>Gallery Test</h1>
 
-<input type="file" id="upload" accept="image/*" multiple>
+<input type="file" id="upload" accept="image/*">
 
-<div id="gallery"></div>
+<br><br>
+
+<img id="preview" style="max-width:300px;">
 
 <script>
-document.getElementById("upload")
-.addEventListener("change", function(e){
 
-    const gallery =
-    document.getElementById("gallery");
+document.getElementById("upload").addEventListener("change", function(event){
 
-    for(const file of e.target.files){
+    const file = event.target.files[0];
 
-        const reader = new FileReader();
+    if(!file) return;
 
-        reader.onload = function(event){
+    const reader = new FileReader();
 
-            const img =
-            document.createElement("img");
+    reader.onload = function(e){
+        document.getElementById("preview").src = e.target.result;
+    };
 
-            img.src = event.target.result;
+    reader.readAsDataURL(file);
 
-            gallery.appendChild(img);
-        };
-
-        reader.readAsDataURL(file);
-    }
 });
+
 </script>
 
 </body>
 </html>
-
-<div class="card">
