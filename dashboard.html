@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Private Gallery</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f0f2f5; padding: 20px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .header h2 { color: #333; }
+        #logoutBtn { background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        #logoutBtn:hover { background-color: #c82333; }
+
+        .upload-section { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; margin-bottom: 20px; }
+        input[type="file"] { margin-bottom: 15px; }
+        #uploadBtn { background-color: #28a745; color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        #uploadBtn:hover { background-color: #218838; }
+
+        /* गैलरी का ग्रिड डिज़ाइन */
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .gallery img { width: 100%; height: 250px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .gallery img:hover { transform: scale(1.03); }
+        .loading-text { text-align: center; color: #666; font-size: 18px; width: 100%; grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Welcome to your Gallery ☁️</h2>
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+    <div class="upload-section">
+        <h3>Upload New Photo</h3><br>
+        <input type="file" id="fileInput" accept="image/*">
+        <br>
+        <button id="uploadBtn">Upload to Cloud</button>
+    </div>
+
+    <!-- यहाँ फोटोज़ दिखेंगी -->
+    <div class="gallery" id="galleryContainer">
+        <p class="loading-text">Loading your photos...</p>
+    </div>
+
+    <!-- Firebase SDK Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCzerH2qOUHW1cFbNegDRwLLrBOKbKkGGw",
+            authDomain: "gallery-private-2026.firebaseapp.com",
+            projectId: "gallery-private-2026",
+            storageBucket: "gallery-private-2026.firebasestorage.app",
+            messagingSenderId: "726122424090",
+            appId: "1:726122424090:web:0f37ec3b7a1b64b101aea3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        let currentUser = null;
+
+        // 1. चेक करें कि यूज़र लॉगिन है या नहीं
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadGallery(user.uid); // यूज़र की फोटोज़ लोड करें
+            } else {
+                // अगर लॉगिन नहीं है, तो वापस लॉगिन पेज पर भेज दें
+                window.location.href = "index.html";
+            }
+        });
+
+        // 2. फोटो अपलोड करने का कोड
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) {
+                alert("Please select a photo first!");
+                return;
+            }
+            
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.innerText = "Uploading... ⏳";
+            uploadBtn.disabled = true;
+
+            // हर यूज़र का अलग फोल्डर बनेगा (users/uid/filename)
+            const storageRef = ref(storage, `users/${currentUser.uid}/${file.name}`);
+            
+            try {
+                await uploadBytes(storageRef, file);
+                alert("Photo uploaded successfully! ✅");
+                document.getElementById('fileInput').value = ""; // इनपुट क्लियर करें
+                loadGallery(currentUser.uid); // गैलरी को रिफ्रेश करें
+            } catch (error) {
+                alert("Upload failed: " + error.message);
+            } finally {
+                uploadBtn.innerText = "Upload to Cloud";
+                uploadBtn.disabled = false;
+            }
+        });
+
+        // 3. गैलरी लोड करने का कोड (Cloud से फोटोज़ लाना)
+        async function loadGallery(uid) {
+            const galleryContainer = document.getElementById('galleryContainer');
+            galleryContainer.innerHTML = '<p class="loading-text">Fetching photos from cloud... ☁️</p>';
+            
+            const listRef = ref(storage, `users/${uid}/`);
+            try {
+                const res = await listAll(listRef);
+                galleryContainer.innerHTML = ""; // Loading text हटाएँ
+                
+                if (res.items.length === 0) {
+                    galleryContainer.innerHTML = '<p class="loading-text">No photos uploaded yet. Upload your first photo! 📸</p>';
+                    return;
+                }
+
+                // हर फोटो का URL लेकर इमेज टैग बनाएँ
+                res.items.forEach(async (itemRef) => {
+                    const url = await getDownloadURL(itemRef);
+                    const imgElement = document.createElement('img');
+                    imgElement.src = url;
+                    galleryContainer.appendChild(imgElement);
+                });
+            } catch (error) {
+                galleryContainer.innerHTML = '<p class="loading-text" style="color:red;">Error loading photos.</p>';
+                console.error(error);
+            }
+        }
+
+        // 4. Logout बटन का कोड
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "index.html";
+            });
+        });
+    </script>
+</body>
+</html>
