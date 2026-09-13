@@ -42,17 +42,15 @@
         <!-- 1. LOGIN SECTION -->
         <div id="loginSection">
             <h2>Client Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>Email ID</label>
-                    <input type="email" id="email" required placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label>Password / PIN</label>
-                    <input type="password" id="password" required placeholder="Enter password">
-                </div>
-                <button type="submit" id="loginBtn">Login to Gallery</button>
-            </form>
+            <div class="form-group">
+                <label>Email ID</label>
+                <input type="email" id="email" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>Password / PIN</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+            <button type="button" id="loginBtn">Login to Gallery</button>
         </div>
 
         <!-- 2. DASHBOARD & GALLERY SECTION (Hidden by default) -->
@@ -81,7 +79,7 @@
         import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-storage.js";
 
         const firebaseConfig = {
-            apiKey: AIzaSyCzerH2qOUHW1CFbNegDRwLLrBOKbKkGGw",
+            apiKey: "AIzaSyCzerH2qOUHW1CFbNegDRwLLrBOKbKkGGw",
             authDomain: "gallery-private-2026.firebaseapp.com",
             projectId: "gallery-private-2026",
             storageBucket: "gallery-private-2026.firebasestorage.app",
@@ -99,7 +97,7 @@
         const dashboardSection = document.getElementById('dashboardSection');
         const galleryContainer = document.getElementById('galleryContainer');
 
-        // पेज लोड होते ही चेक करो कि यूजर पहले से लॉगिन है या नहीं
+        // स्टेट ट्रैक करें
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 activeUser = user;
@@ -113,19 +111,22 @@
             }
         });
 
-        // लॉगिन फॉर्म सबमिट होने पर
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
+        // डायरेक्ट क्लिक से लॉगिन
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!email || !password) {
+                alert("Please enter email and password!");
+                return;
+            }
 
+            const loginBtn = document.getElementById('loginBtn');
             loginBtn.innerText = "Logging in...";
             loginBtn.disabled = true;
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // जैसे ही लॉगिन होगा, ऊपर onAuthStateChanged अपने आप डैशबोर्ड दिखा देगा!
             } catch (error) {
                 alert("Login Failed: " + error.message);
                 loginBtn.innerText = "Login to Gallery";
@@ -133,7 +134,7 @@
             }
         });
 
-        // फोटो अपलोड लॉजिक (बिना किसी पेज बदले के)
+        // फोटो अपलोड लॉजिक
         document.getElementById('uploadBtn').addEventListener('click', async () => {
             const fileInput = document.getElementById('fileInput');
             const file = fileInput.files[0];
@@ -192,9 +193,7 @@
 
         // लॉगआउट बटन
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => {
-                // लॉगआउट होते ही onAuthStateChanged अपने आप लॉगिन पेज दिखा देगा
-            });
+            signOut(auth);
         });
     </script>
 </body>
