@@ -48,21 +48,22 @@
         <button id="mainActionBtn">Login</button>
         <span class="toggle-text" id="toggleFormBtn">Want to create a new client account? Click here</span>
     </div>
-
-    <!-- Firebase SDK Modules -->
+<!-- Firebase SDK Modules -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Importing Firebase version 12.19.0 (as per your screenshot)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-        // 👇 Put your Firebase Config here 👇
+        // Your actual Firebase Config from the screenshot
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_MESSAGING_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyCzerH2qOUHW1cFbNegDRwLLrBOKbKkGGw",
+            authDomain: "gallery-private-2026.firebaseapp.com",
+            projectId: "gallery-private-2026",
+            storageBucket: "gallery-private-2026.firebasestorage.app",
+            messagingSenderId: "726122424090",
+            appId: "1:726122424090:web:0f37ec3b7a1b64b101aea3",
+            measurementId: "G-JCEBG3N2JH"
         };
 
         // Initialize Firebase
@@ -151,6 +152,7 @@
                 }
             }
         });
+    </script>
     </script>
 </body>
 </html>
