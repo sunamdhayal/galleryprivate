@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>क्लाइंट पोर्टल - मेरी गैलरी</title>
+    <title>Client Portal - My Gallery</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .auth-container { background-color: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
         .auth-container h2 { color: #333; margin-bottom: 5px; }
@@ -15,50 +15,47 @@
         input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
         input:focus { outline: none; border-color: #007bff; }
         button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; color: white; cursor: pointer; margin-bottom: 10px; transition: 0.3s; }
-        #loginBtn { background-color: #007bff; }
-        #loginBtn:hover { background-color: #0056b3; }
-        #signupBtn { background-color: #28a745; margin-top: 10px; }
-        #signupBtn:hover { background-color: #218838; }
+        #mainActionBtn { background-color: #007bff; }
+        #mainActionBtn:hover { background-color: #0056b3; }
         .toggle-text { font-size: 13px; color: #007bff; cursor: pointer; margin-top: 15px; display: block; }
         
-        /* नाम वाला फील्ड शुरू में छिपा रहेगा (सिर्फ Signup के समय दिखेगा) */
+        /* Name field hidden initially (only visible during signup) */
         #nameGroup { display: none; }
     </style>
 </head>
 <body>
 
     <div class="auth-container">
-        <h2 id="formTitle">क्लाइंट लॉगिन</h2>
-        <p id="formSubtitle">अपनी गैलरी देखने के लिए लॉगिन करें</p>
+        <h2 id="formTitle">Client Login</h2>
+        <p id="formSubtitle">Login to view your gallery</p>
 
-        <!-- क्लाइंट का नाम (सिर्फ अकाउंट बनाते समय दिखेगा) -->
+        <!-- Client Name (Visible only during Sign Up) -->
         <div class="input-group" id="nameGroup">
-            <label>पूरा नाम (Full Name)</label>
-            <input type="text" id="nameInput" placeholder="क्लाइंट का नाम">
+            <label>Full Name</label>
+            <input type="text" id="nameInput" placeholder="Client's Full Name">
         </div>
 
         <div class="input-group">
-            <label>ईमेल आईडी (Email ID)</label>
+            <label>Email ID</label>
             <input type="email" id="emailInput" placeholder="client@example.com" required>
         </div>
 
         <div class="input-group">
-            <label>पासवर्ड / PIN</label>
-            <input type="password" id="passwordInput" placeholder="कम से कम 6 अक्षरों का पासवर्ड" required>
+            <label>Password / PIN</label>
+            <input type="password" id="passwordInput" placeholder="Minimum 6 characters" required>
         </div>
 
-        <button id="mainActionBtn">लॉगिन (Login)</button>
-        <span class="toggle-text" id="toggleFormBtn">नया क्लाइंट अकाउंट बनाना है? यहाँ क्लिक करें</span>
+        <button id="mainActionBtn">Login</button>
+        <span class="toggle-text" id="toggleFormBtn">Want to create a new client account? Click here</span>
     </div>
 
     <!-- Firebase SDK Modules -->
     <script type="module">
-        // Auth के साथ-साथ अब हम Firestore (Database) भी इम्पोर्ट कर रहे हैं
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // 👇 अपना Firebase Config यहाँ डालें 👇
+        // 👇 Put your Firebase Config here 👇
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_PROJECT.firebaseapp.com",
@@ -68,11 +65,12 @@
             appId: "YOUR_APP_ID"
         };
 
+        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app); // डेटाबेस चालू किया
+        const db = getFirestore(app); 
 
-        // UI Toggle Logic (लॉगिन और साइन-अप फॉर्म के बीच स्विच करने के लिए)
+        // UI Toggle Logic (Switch between Login and Signup)
         let isSignupMode = false;
         const nameGroup = document.getElementById('nameGroup');
         const formTitle = document.getElementById('formTitle');
@@ -84,43 +82,46 @@
             isSignupMode = !isSignupMode;
             if (isSignupMode) {
                 nameGroup.style.display = "block";
-                formTitle.innerText = "नया क्लाइंट रजिस्टर करें";
-                formSubtitle.innerText = "क्लाइंट का ऑथेंटिक अकाउंट बनाएँ";
-                mainActionBtn.innerText = "अकाउंट बनाएँ (Sign Up)";
+                formTitle.innerText = "Register New Client";
+                formSubtitle.innerText = "Create an authentic client account";
+                mainActionBtn.innerText = "Sign Up";
                 mainActionBtn.style.backgroundColor = "#28a745";
-                toggleFormBtn.innerText = "पहले से अकाउंट है? लॉगिन करें";
+                toggleFormBtn.innerText = "Already have an account? Login";
             } else {
                 nameGroup.style.display = "none";
-                formTitle.innerText = "क्लाइंट लॉगिन";
-                formSubtitle.innerText = "अपनी गैलरी देखने के लिए लॉगिन करें";
-                mainActionBtn.innerText = "लॉगिन (Login)";
+                formTitle.innerText = "Client Login";
+                formSubtitle.innerText = "Login to view your gallery";
+                mainActionBtn.innerText = "Login";
                 mainActionBtn.style.backgroundColor = "#007bff";
-                toggleFormBtn.innerText = "नया क्लाइंट अकाउंट बनाना है? यहाँ क्लिक करें";
+                toggleFormBtn.innerText = "Want to create a new client account? Click here";
             }
         });
 
-        // Main Action (Login या Signup)
+        // Main Action (Login or Signup)
         mainActionBtn.addEventListener('click', async () => {
-            const email = document.getElementById('emailInput').value;
-            const password = document.getElementById('passwordInput').value;
-            const name = document.getElementById('nameInput').value;
+            const email = document.getElementById('emailInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+            const name = document.getElementById('nameInput').value.trim();
 
             if (!email || !password) {
-                alert("ईमेल और पासवर्ड भरना ज़रूरी है!");
+                alert("Email and password are required!");
                 return;
             }
 
             if (isSignupMode) {
-                // --- SIGN UP LOGIC (नया क्लाइंट) ---
-                if (!name) { alert("क्लाइंट का नाम भरना ज़रूरी है!"); return; }
+                // --- SIGN UP LOGIC ---
+                if (!name) { 
+                    alert("Client name is required!"); 
+                    return; 
+                }
                 
                 try {
-                    mainActionBtn.innerText = "प्रोसेस हो रहा है...";
-                    // 1. Firebase Auth में अकाउंट बनाना
+                    mainActionBtn.innerText = "Processing...";
+                    // 1. Create account in Firebase Auth
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     const user = userCredential.user;
 
-                    // 2. क्लाइंट का नाम और डिटेल्स Firestore Database में सेव करना
+                    // 2. Save client details in Firestore Database
                     await setDoc(doc(db, "clients", user.uid), {
                         fullName: name,
                         email: email,
@@ -128,25 +129,25 @@
                         createdAt: new Date()
                     });
 
-                    alert(`अकाउंट बन गया! ${name} अब लॉगिन कर सकते हैं।`);
-                    // लॉगिन पेज पर वापस भेजें
+                    alert(`Account created successfully! ${name} can now login.`);
+                    // Switch back to login page
                     toggleFormBtn.click(); 
                 } catch (error) {
-                    alert("एरर: " + error.message);
-                    mainActionBtn.innerText = "अकाउंट बनाएँ (Sign Up)";
+                    alert("Error: " + error.message);
+                    mainActionBtn.innerText = "Sign Up";
                 }
             } else {
                 // --- LOGIN LOGIC ---
                 try {
-                    mainActionBtn.innerText = "लॉगिन हो रहा है...";
+                    mainActionBtn.innerText = "Logging in...";
                     await signInWithEmailAndPassword(auth, email, password);
                     
-                    alert("लॉगिन सफल रहा!");
-                    // गैलरी पेज पर भेजें
+                    alert("Login successful!");
+                    // Redirect to gallery dashboard
                     window.location.href = "dashboard.html";
                 } catch (error) {
-                    alert("गलत ईमेल या पासवर्ड!");
-                    mainActionBtn.innerText = "लॉगिन (Login)";
+                    alert("Invalid email or password!");
+                    mainActionBtn.innerText = "Login";
                 }
             }
         });
