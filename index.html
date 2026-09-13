@@ -52,12 +52,12 @@
     <script type="module">
         // Importing Firebase version 12.19.0 (as per your screenshot)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
         // Your actual Firebase Config from the screenshot
         const firebaseConfig = {
-            apiKey: "AIzaSyCzerH2qOUHW1CFbNegDRwLLrBOKbKkGGw",
+            apiKey:"AIzaSyCzerH2qOUHW1CFbNegDRwLLrBOKbKkGGw",
             authDomain: "gallery-private-2026.firebaseapp.com",
             projectId: "gallery-private-2026",
             storageBucket: "gallery-private-2026.firebasestorage.app",
