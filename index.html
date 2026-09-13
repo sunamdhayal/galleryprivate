@@ -1,248 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Private Cloud Gallery</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मेरी प्राइवेट गैलरी - लॉगिन</title>
+    <style>
+        /* वेबसाइट का मॉडर्न डिज़ाइन (CSS) */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-<style>
+        body {
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
+        .auth-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
 
-body{
-background:#0f172a;
-color:white;
-min-height:100vh;
-}
+        .auth-container h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
 
-.login-page{
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-}
+        .auth-container p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
 
-.login-box{
-background:#1e293b;
-padding:40px;
-border-radius:20px;
-width:350px;
-text-align:center;
-}
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
 
-.login-box h1{
-margin-bottom:20px;
-}
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
 
-input{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:10px;
-}
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
 
-button{
-margin-top:15px;
-padding:12px;
-width:100%;
-border:none;
-border-radius:10px;
-background:#3b82f6;
-color:white;
-font-size:16px;
-cursor:pointer;
-}
+        #loginBtn {
+            background-color: #007bff;
+        }
 
-button:hover{
-background:#2563eb;
-}
+        #loginBtn:hover {
+            background-color: #0056b3;
+        }
 
-.dashboard{
-display:none;
-}
+        #signupBtn {
+            background-color: #28a745;
+        }
 
-.navbar{
-background:#1e293b;
-padding:20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.logo{
-font-size:22px;
-font-weight:bold;
-}
-
-.content{
-padding:20px;
-}
-
-.upload-area{
-background:#1e293b;
-padding:25px;
-border-radius:15px;
-margin-bottom:25px;
-}
-
-.gallery{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-gap:20px;
-}
-
-.card{
-background:#1e293b;
-padding:10px;
-border-radius:15px;
-}
-
-.card img,
-.card video{
-width:100%;
-border-radius:10px;
-}
-
-</style>
+        #signupBtn:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
 
-<div class="login-page" id="loginPage">
+    <div class="auth-container">
+        <h2>प्राइवेट गैलरी ☁️</h2>
+        <p>अपनी पर्सनल स्टोरेज एक्सेस करने के लिए लॉगिन करें</p>
 
-<div class="login-box">
+        <!-- लॉगिन फॉर्म -->
+        <input type="text" id="usernameInput" placeholder="अपनी यूज़रनेम ID डालें (जैसे: raman123)" required>
+        <input type="password" id="pinInput" placeholder="अपना गुप्त PIN डालें" required>
 
-<h1>🔒 Private Vault</h1>
+        <button id="loginBtn">लॉगिन (Login)</button>
+        <button id="signupBtn">नया अकाउंट बनाएँ (Sign Up)</button>
+    </div>
 
-<input
-type="password"
-id="pin"
-placeholder="Enter PIN">
+    <!-- Firebase SDK Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-<button onclick="login()">
-Unlock Gallery
-</button>
+        // 👇 यहाँ आपको अपना Firebase Config पेस्ट करना है 👇
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_ID",
+            appId: "YOUR_APP_ID"
+        };
+        // 👆 ------------------------------------------- 👆
 
-</div>
+        // Firebase Initialize करें
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-</div>
+        // ID को ईमेल में बदलने का फंक्शन (ताकि Firebase एक्सेप्ट कर ले)
+        function getEmailFromUsername(username) {
+            return username.trim() + "@mygallery.com";
+        }
 
-<div class="dashboard" id="dashboard">
+        // नया अकाउंट (Sign Up) लॉजिक
+        document.getElementById('signupBtn').addEventListener('click', () => {
+            const username = document.getElementById('usernameInput').value;
+            const pin = document.getElementById('pinInput').value;
 
-<div class="navbar">
-<div class="logo">📸 My Cloud Gallery</div>
-<div>Protected Access</div>
-</div>
+            if(!username || !pin) {
+                alert("कृपया ID और PIN दोनों भरें!");
+                return;
+            }
 
-<div class="content">
+            const dummyEmail = getEmailFromUsername(username);
 
-<div class="upload-area">
-<h2>Upload Photos & Videos</h2>
+            createUserWithEmailAndPassword(auth, dummyEmail, pin)
+                .then((userCredential) => {
+                    alert("अकाउंट सफलतापूर्वक बन गया! अब आप लॉगिन कर सकते हैं।");
+                })
+                .catch((error) => {
+                    if(error.code === 'auth/email-already-in-use') {
+                        alert("यह ID पहले से किसी ने ले रखी है, कोई दूसरी ID चुनें।");
+                    } else if (error.code === 'auth/weak-password') {
+                        alert("PIN कम से कम 6 अक्षरों/नंबरों का होना चाहिए।");
+                    } else {
+                        alert("एरर: " + error.message);
+                    }
+                });
+        });
 
-<br>
+        // लॉगिन (Login) लॉजिक
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const username = document.getElementById('usernameInput').value;
+            const pin = document.getElementById('pinInput').value;
 
-<input
-type="file"
-id="uploadInput"
-accept="image/*,video/*"
-multiple>
+            if(!username || !pin) {
+                alert("कृपया ID और PIN दोनों भरें!");
+                return;
+            }
 
-</div>
+            const dummyEmail = getEmailFromUsername(username);
 
-<div class="gallery" id="gallery">
-
-<div class="card">
-https://picsum.photos/500/300
-</div>
-
-<div class="card">
-https://picsum.photos/501/300
-</div>
-
-<div class="card">
-https://picsum.photos/502/300
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-const PIN = "1234";
-
-function login(){
-
-let enteredPin =
-document.getElementById("pin").value;
-
-if(enteredPin === PIN){
-
-document.getElementById("loginPage").style.display = "none";
-
-document.getElementById("dashboard").style.display = "block";
-
-}
-else{
-
-alert("Invalid PIN");
-
-}
-
-}
-
-document
-.getElementById("uploadInput")
-.addEventListener("change",function(e){
-
-let gallery =
-document.getElementById("gallery");
-
-for(let file of e.target.files){
-
-let reader = new FileReader();
-
-reader.onload = function(event){
-
-let card =
-document.createElement("div");
-
-card.className = "card";
-
-if(file.type.startsWith("image")){
-
-card.innerHTML =
-`<img src="${event.target.result}">`;
-
-}else{
-
-card.innerHTML =
-`
-<video controls>
-<source src="${event.target.result}">
-</video>
-`;
-
-}
-
-gallery.appendChild(card);
-
-}
-
-reader.readAsDataURL(file);
-
-}
-
-});
-
-</script>
-
+            signInWithEmailAndPassword(auth, dummyEmail, pin)
+                .then((userCredential) => {
+                    // लॉगिन सफल होने पर यूज़र को मेन गैलरी पेज पर भेज दें
+                    window.location.href = "dashboard.html"; // हम अगला पेज dashboard.html बनाएंगे
+                })
+                .catch((error) => {
+                    alert("गलत ID या PIN! कृपया दोबारा चेक करें।");
+                });
+        });
+    </script>
 </body>
 </html>
