@@ -65,16 +65,23 @@
 
         let currentUser = null;
 
-        // 1. चेक करें कि यूज़र लॉगिन है या नहीं
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                loadGallery(user.uid); // यूज़र की फोटोज़ लोड करें
-            } else {
-                // अगर लॉगिन नहीं है, तो वापस लॉगिन पेज पर भेज दें
+// फिक्स किया हुआ स्मार्ट Auth चेक (लूप खत्म करने के लिए)
+let checkCount = 0;
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // अगर यूज़र मिल गया, तो गैलरी लोड करो
+        currentUser = user;
+        loadGallery(user.uid);
+    } else {
+        // तुरंत भगाने के बजाय 1.5 सेकंड इंतज़ार करो ताकि फायरबेस चेक कर सके
+        setTimeout(() => {
+            if (!auth.currentUser) {
                 window.location.href = "index.html";
             }
-        });
+        }, 1500);
+    }
+});
 
         // 2. फोटो अपलोड करने का कोड
         document.getElementById('uploadBtn').addEventListener('click', async () => {
