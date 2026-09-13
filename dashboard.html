@@ -51,35 +51,42 @@
         const auth = getAuth(app);
         const storage = getStorage(app);
 
-        let currentUser = null;
-
-        // डायरेक्ट यूज़र ट्रैक करो
+        // ऑथेंटिकेशन स्टेट ट्रैक करें
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                currentUser = user;
                 loadGallery(user.uid);
             } else {
-                // अगर कोई यूजर नहीं है, तो चुपचाप लॉगिन पेज का लिंक दिखा दो या छोड़ दो
                 document.getElementById('galleryContainer').innerHTML = '<p class="loading-text" style="color:red;">Please log in first. <a href="index.html">Click here</a></p>';
             }
         });
 
-        // अपलोड लॉजिक
+        // एकदम सही और पक्का अपलोड लॉजिक
         document.getElementById('uploadBtn').addEventListener('click', async () => {
-            const file = document.getElementById('fileInput').files[0];
-            if (!file) { alert("Please select a photo first!"); return; }
-            if (!currentUser) { alert("User not logged in properly!"); return; }
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) { 
+                alert("Please select a photo first!"); 
+                return; 
+            }
+
+            const activeUser = auth.currentUser;
+            if (!activeUser) { 
+                alert("Session expired. Please log in again.");
+                window.location.href = "index.html";
+                return; 
+            }
 
             const uploadBtn = document.getElementById('uploadBtn');
             uploadBtn.innerText = "Uploading... ⏳";
             uploadBtn.disabled = true;
 
-            const storageRef = ref(storage, `users/${currentUser.uid}/${file.name}`);
+            const storageRef = ref(storage, `users/${activeUser.uid}/${file.name}`);
             try {
                 await uploadBytes(storageRef, file);
                 alert("Photo uploaded successfully! ✅");
-                document.getElementById('fileInput').value = "";
-                loadGallery(currentUser.uid);
+                fileInput.value = "";
+                loadGallery(activeUser.uid);
             } catch (error) {
                 alert("Upload failed: " + error.message);
             } finally {
@@ -88,7 +95,7 @@
             }
         });
 
-        // गैलरी लोड लॉजिक
+        // गैलरी लोड करने का लॉजिक
         async function loadGallery(uid) {
             const galleryContainer = document.getElementById('galleryContainer');
             galleryContainer.innerHTML = '<p class="loading-text">Fetching photos... ☁️</p>';
@@ -97,10 +104,12 @@
             try {
                 const res = await listAll(listRef);
                 galleryContainer.innerHTML = "";
+                
                 if (res.items.length === 0) {
                     galleryContainer.innerHTML = '<p class="loading-text">No photos uploaded yet. 📸</p>';
                     return;
                 }
+
                 res.items.forEach(async (itemRef) => {
                     const url = await getDownloadURL(itemRef);
                     const imgElement = document.createElement('img');
@@ -112,9 +121,11 @@
             }
         }
 
-        // लॉगआउट
+        // लॉगआउट बटन
         document.getElementById('logoutBtn').addEventListener('click', () => {
-            signOut(auth).then(() => { window.location.href = "index.html"; });
+            signOut(auth).then(() => { 
+                window.location.href = "index.html"; 
+            });
         });
     </script>
 </body>
