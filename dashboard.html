@@ -45,7 +45,7 @@
     <!-- Firebase SDK Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, listAll } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-storage.js";
 
         const firebaseConfig = {
@@ -63,21 +63,27 @@
 
         let currentUser = null;
 
-        // सुरक्षित Auth चेकर (लूप खत्म करने के लिए टाइमर के साथ)
+        // 1. सेशन को परमानेंट लोकल स्टोरेज में सेट करें ताकि लॉग-आउट न हो
+        setPersistence(auth, browserLocalPersistence).catch((error) => {
+            console.error("Persistence error: ", error);
+        });
+
+        // 2. स्टेबल Auth चेकर (बिना लूप के रुकने वाला)
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 loadGallery(user.uid);
             } else {
+                // 2 सेकंड का होल्ड ताकि फायरबेस सेशन को रीड कर सके
                 setTimeout(() => {
                     if (!auth.currentUser) {
                         window.location.href = "index.html";
                     }
-                }, 1500);
+                }, 2000);
             }
         });
 
-        // फोटो अपलोड करने का लॉजिक
+        // 3. फोटो अपलोड करने का लॉजिक
         document.getElementById('uploadBtn').addEventListener('click', async () => {
             const file = document.getElementById('fileInput').files[0];
             if (!file) {
@@ -104,7 +110,7 @@
             }
         });
 
-        // गैलरी लोड करने का लॉजिक
+        // 4. गैलरी लोड करने का लॉजिक
         async function loadGallery(uid) {
             const galleryContainer = document.getElementById('galleryContainer');
             galleryContainer.innerHTML = '<p class="loading-text">Fetching photos from cloud... ☁️</p>';
@@ -131,7 +137,7 @@
             }
         }
 
-        // लॉगआउट लॉजिक
+        // 5. लॉगआउट लॉजिक
         document.getElementById('logoutBtn').addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = "index.html";
