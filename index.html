@@ -52,7 +52,7 @@
     <script type="module">
         // Importing Firebase version 12.19.0 (as per your screenshot)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
         // Your actual Firebase Config from the screenshot
@@ -69,13 +69,6 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-// चेक करो कि क्या क्लाइंट पहले से लॉगिन है?
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // अगर हाँ, तो बिना फॉर्म दिखाए सीधा गैलरी पेज पर भेज दो
-        window.location.href = "dashboard.html";
-    }
-});
         const db = getFirestore(app); 
 
         // UI Toggle Logic (Switch between Login and Signup)

@@ -18,7 +18,6 @@
         #uploadBtn { background-color: #28a745; color: white; border: none; padding: 10px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
         #uploadBtn:hover { background-color: #218838; }
 
-        /* गैलरी का ग्रिड डिज़ाइन */
         .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .gallery img { width: 100%; height: 250px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s; }
         .gallery img:hover { transform: scale(1.03); }
@@ -39,12 +38,11 @@
         <button id="uploadBtn">Upload to Cloud</button>
     </div>
 
-    <!-- यहाँ फोटोज़ दिखेंगी -->
     <div class="gallery" id="galleryContainer">
         <p class="loading-text">Loading your photos...</p>
     </div>
 
-    <!-- Firebase SDK Modules -->
+    <!-- Firebase SDK Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
@@ -65,25 +63,21 @@
 
         let currentUser = null;
 
-// फिक्स किया हुआ स्मार्ट Auth चेक (लूप खत्म करने के लिए)
-let checkCount = 0;
-
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // अगर यूज़र मिल गया, तो गैलरी लोड करो
-        currentUser = user;
-        loadGallery(user.uid);
-    } else {
-        // तुरंत भगाने के बजाय 1.5 सेकंड इंतज़ार करो ताकि फायरबेस चेक कर सके
-        setTimeout(() => {
-            if (!auth.currentUser) {
-                window.location.href = "index.html";
+        // सुरक्षित Auth चेकर (लूप खत्म करने के लिए टाइमर के साथ)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loadGallery(user.uid);
+            } else {
+                setTimeout(() => {
+                    if (!auth.currentUser) {
+                        window.location.href = "index.html";
+                    }
+                }, 1500);
             }
-        }, 1500);
-    }
-});
+        });
 
-        // 2. फोटो अपलोड करने का कोड
+        // फोटो अपलोड करने का लॉजिक
         document.getElementById('uploadBtn').addEventListener('click', async () => {
             const file = document.getElementById('fileInput').files[0];
             if (!file) {
@@ -95,14 +89,13 @@ onAuthStateChanged(auth, (user) => {
             uploadBtn.innerText = "Uploading... ⏳";
             uploadBtn.disabled = true;
 
-            // हर यूज़र का अलग फोल्डर बनेगा (users/uid/filename)
             const storageRef = ref(storage, `users/${currentUser.uid}/${file.name}`);
             
             try {
                 await uploadBytes(storageRef, file);
                 alert("Photo uploaded successfully! ✅");
-                document.getElementById('fileInput').value = ""; // इनपुट क्लियर करें
-                loadGallery(currentUser.uid); // गैलरी को रिफ्रेश करें
+                document.getElementById('fileInput').value = "";
+                loadGallery(currentUser.uid);
             } catch (error) {
                 alert("Upload failed: " + error.message);
             } finally {
@@ -111,7 +104,7 @@ onAuthStateChanged(auth, (user) => {
             }
         });
 
-        // 3. गैलरी लोड करने का कोड (Cloud से फोटोज़ लाना)
+        // गैलरी लोड करने का लॉजिक
         async function loadGallery(uid) {
             const galleryContainer = document.getElementById('galleryContainer');
             galleryContainer.innerHTML = '<p class="loading-text">Fetching photos from cloud... ☁️</p>';
@@ -119,14 +112,13 @@ onAuthStateChanged(auth, (user) => {
             const listRef = ref(storage, `users/${uid}/`);
             try {
                 const res = await listAll(listRef);
-                galleryContainer.innerHTML = ""; // Loading text हटाएँ
+                galleryContainer.innerHTML = "";
                 
                 if (res.items.length === 0) {
                     galleryContainer.innerHTML = '<p class="loading-text">No photos uploaded yet. Upload your first photo! 📸</p>';
                     return;
                 }
 
-                // हर फोटो का URL लेकर इमेज टैग बनाएँ
                 res.items.forEach(async (itemRef) => {
                     const url = await getDownloadURL(itemRef);
                     const imgElement = document.createElement('img');
@@ -139,7 +131,7 @@ onAuthStateChanged(auth, (user) => {
             }
         }
 
-        // 4. Logout बटन का कोड
+        // लॉगआउट लॉजिक
         document.getElementById('logoutBtn').addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = "index.html";
